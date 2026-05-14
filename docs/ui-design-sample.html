@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>yz-player UI sample</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --color-bg: #f6f7f9;
+        --color-surface: #ffffff;
+        --color-surface-elevated: #ffffff;
+        --color-player: #0d1117;
+        --color-text: #1f2933;
+        --color-muted: #667386;
+        --color-border: #d8dde5;
+        --color-border-strong: #b9c2cf;
+        --color-primary: #2563eb;
+        --color-primary-text: #ffffff;
+        --color-primary-soft: #e8f1ff;
+        --color-danger: #b42318;
+        --color-danger-soft: #fff0ed;
+        --color-focus: #1d4ed8;
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --shadow-dialog: 0 18px 48px rgba(15, 23, 42, 0.24);
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 24px;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      :root[data-theme="soft"] {
+        --color-bg: #f7f5fb;
+        --color-surface: #fffefd;
+        --color-primary: #7c3aed;
+        --color-primary-soft: #f0e9ff;
+        --color-border: #ddd6e8;
+        --radius-sm: 8px;
+        --radius-md: 10px;
+      }
+
+      :root[data-theme="solid"] {
+        --color-bg: #eef2f6;
+        --color-surface: #ffffff;
+        --color-primary: #005f73;
+        --color-primary-soft: #dff5f7;
+        --color-border: #b7c2cc;
+        --color-text: #15202b;
+        --radius-sm: 4px;
+        --radius-md: 6px;
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --color-bg: #111827;
+        --color-surface: #182233;
+        --color-surface-elevated: #202c3f;
+        --color-player: #070b10;
+        --color-text: #eef3f8;
+        --color-muted: #a6b2c2;
+        --color-border: #344258;
+        --color-border-strong: #52627a;
+        --color-primary: #60a5fa;
+        --color-primary-text: #07111f;
+        --color-primary-soft: #1d3a5f;
+        --color-danger: #fb7185;
+        --color-danger-soft: #4a1f2b;
+        --shadow-dialog: 0 18px 48px rgba(0, 0, 0, 0.42);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        background: var(--color-bg);
+        color: var(--color-text);
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      button,
+      .file-button,
+      select {
+        min-height: 40px;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        background: var(--color-surface);
+        color: var(--color-text);
+      }
+
+      button,
+      .file-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 7px 11px;
+        cursor: pointer;
+      }
+
+      button:hover,
+      .file-button:hover,
+      select:hover {
+        border-color: var(--color-border-strong);
+      }
+
+      button:focus-visible,
+      .file-button:focus-within,
+      select:focus-visible,
+      textarea:focus-visible,
+      input:focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--color-focus), transparent 70%);
+        outline-offset: 2px;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.56;
+      }
+
+      .button-primary {
+        border-color: var(--color-primary);
+        background: var(--color-primary);
+        color: var(--color-primary-text);
+        font-weight: 700;
+      }
+
+      .button-danger {
+        border-color: color-mix(in srgb, var(--color-danger), transparent 36%);
+        background: var(--color-danger-soft);
+        color: var(--color-danger);
+      }
+
+      .button-icon {
+        width: 40px;
+        padding-inline: 0;
+      }
+
+      .app-shell {
+        min-height: 100svh;
+      }
+
+      .app-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+        padding: var(--space-2) var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+        background: color-mix(in srgb, var(--color-bg), var(--color-surface) 72%);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+      }
+
+      .brand-logo {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        flex: 0 0 auto;
+      }
+
+      .brand-title {
+        width: min(132px, 38vw);
+        height: auto;
+        object-fit: contain;
+        flex: 0 1 auto;
+      }
+
+      .header-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .theme-select {
+        padding: 0 28px 0 10px;
+      }
+
+      .app-main {
+        width: min(100%, 1220px);
+        margin: 0 auto;
+        padding: var(--space-4);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.9fr);
+        gap: var(--space-4);
+        align-items: start;
+      }
+
+      .player-column,
+      .playlist-column {
+        display: grid;
+        gap: var(--space-3);
+        min-width: 0;
+      }
+
+      .playlist-column {
+        position: sticky;
+        top: 68px;
+        grid-template-rows: auto auto minmax(0, 1fr);
+        max-height: min(680px, calc(100svh - 84px));
+        overflow: hidden;
+      }
+
+      .player-stage {
+        position: sticky;
+        top: 68px;
+        z-index: 10;
+        display: grid;
+        gap: var(--space-3);
+      }
+
+      .youtube-viewport {
+        aspect-ratio: 16 / 9;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: var(--radius-md);
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 44%),
+          var(--color-player);
+        color: #ffffff;
+      }
+
+      .youtube-placeholder {
+        width: 84%;
+        display: grid;
+        gap: var(--space-3);
+        text-align: center;
+      }
+
+      .play-symbol {
+        width: 62px;
+        height: 62px;
+        display: inline-grid;
+        place-items: center;
+        justify-self: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+        font-size: 26px;
+      }
+
+      .video-title {
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .video-meta {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 13px;
+      }
+
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2) var(--space-3);
+        color: var(--color-muted);
+        font-size: 13px;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 28px;
+        padding: 3px 8px;
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        background: var(--color-surface);
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+      }
+
+      .now-playing {
+        display: grid;
+        gap: var(--space-2);
+        padding: var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
+      }
+
+      .eyebrow {
+        color: var(--color-muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .track-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 20px;
+        font-weight: 800;
+      }
+
+      .track-detail {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2) var(--space-4);
+        color: var(--color-muted);
+        font-size: 13px;
+      }
+
+      .progress {
+        height: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--color-border), transparent 36%);
+      }
+
+      .progress-value {
+        width: 42%;
+        height: 100%;
+        background: var(--color-primary);
+      }
+
+      .control-panel {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
+      }
+
+      .control-group {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .control-spacer {
+        flex: 1 1 16px;
+      }
+
+      .volume-value {
+        min-width: 42px;
+        color: var(--color-muted);
+        font-size: 13px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+      }
+
+      .section-title {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .setlist-entry,
+      .playlist-list,
+      .parse-preview {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
+      }
+
+      .setlist-entry {
+        display: grid;
+        gap: var(--space-2);
+        padding: var(--space-3);
+      }
+
+      .setlist-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+      }
+
+      .muted {
+        color: var(--color-muted);
+        font-size: 13px;
+      }
+
+      .playlist-list {
+        min-height: 0;
+        max-height: none;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .playlist-items {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .playlist-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: var(--space-2);
+        align-items: center;
+        padding: var(--space-3);
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .playlist-item:last-child {
+        border-bottom: 0;
+      }
+
+      .playlist-item[aria-current="true"] {
+        border-left: 4px solid var(--color-primary);
+        background: var(--color-primary-soft);
+      }
+
+      .playlist-main {
+        min-width: 0;
+      }
+
+      .playlist-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 750;
+      }
+
+      .playlist-sub {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 3px;
+        color: var(--color-muted);
+        font-size: 13px;
+      }
+
+      .dialog-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        display: grid;
+        place-items: center;
+        padding: var(--space-4);
+        background: rgba(7, 12, 20, 0.46);
+      }
+
+      .dialog-backdrop[hidden] {
+        display: none;
+      }
+
+      .setlist-dialog {
+        width: min(100%, 760px);
+        max-height: min(82svh, 720px);
+        display: grid;
+        gap: var(--space-3);
+        margin: 0 auto;
+        overflow: auto;
+        padding: var(--space-4);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface-elevated);
+        box-shadow: var(--shadow-dialog);
+      }
+
+      .dialog-header,
+      .dialog-footer,
+      .preview-counts {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+      }
+
+      .dialog-title {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: var(--space-3);
+      }
+
+      label {
+        display: grid;
+        gap: var(--space-1);
+        color: var(--color-muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        background: var(--color-surface);
+        color: var(--color-text);
+        padding: 9px 10px;
+      }
+
+      textarea {
+        min-height: 130px;
+        resize: vertical;
+      }
+
+      .parse-preview {
+        display: grid;
+        gap: var(--space-2);
+        padding: var(--space-3);
+      }
+
+      .preview-counts strong {
+        color: var(--color-primary);
+      }
+
+      .issue {
+        color: var(--color-danger);
+      }
+
+      .sample-note {
+        margin: var(--space-3) 0 0;
+        color: var(--color-muted);
+        font-size: 12px;
+      }
+
+      @media (max-width: 860px) {
+        .app-main {
+          padding: var(--space-3);
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .player-stage {
+          top: 60px;
+        }
+
+        .playlist-column {
+          position: static;
+          max-height: none;
+          overflow: visible;
+        }
+
+        .playlist-list {
+          max-height: 42svh;
+        }
+      }
+
+      @media (max-width: 560px) {
+        body {
+          overflow: auto;
+        }
+
+        .app-shell {
+          min-height: 100svh;
+          height: auto;
+          display: block;
+          overflow: visible;
+        }
+
+        .app-header {
+          position: static;
+          min-height: 60px;
+          padding-inline: var(--space-3);
+        }
+
+        .brand {
+          gap: 6px;
+        }
+
+        .brand-logo {
+          width: 36px;
+          height: 36px;
+        }
+
+        .brand-title {
+          width: min(116px, 36vw);
+        }
+
+        .header-actions {
+          max-width: 52%;
+        }
+
+        .theme-select {
+          width: 100%;
+        }
+
+        .app-main {
+          min-height: auto;
+          overflow: visible;
+          padding: var(--space-2);
+        }
+
+        .layout {
+          height: auto;
+          display: grid;
+          grid-template-rows: auto auto;
+          gap: var(--space-2);
+        }
+
+        .player-column,
+        .playlist-column,
+        .player-stage {
+          gap: var(--space-2);
+          min-height: 0;
+        }
+
+        .player-column {
+          position: sticky;
+          top: var(--space-2);
+          z-index: 20;
+          background: var(--color-bg);
+          padding-bottom: var(--space-2);
+        }
+
+        .player-stage {
+          position: static;
+        }
+
+        .playlist-column {
+          display: grid;
+          grid-template-rows: auto auto auto;
+          overflow: visible;
+        }
+
+        .youtube-viewport,
+        .now-playing,
+        .control-panel,
+        .setlist-entry,
+        .playlist-list,
+        .setlist-dialog {
+          border-radius: var(--radius-sm);
+        }
+
+        .youtube-placeholder {
+          gap: var(--space-2);
+        }
+
+        .play-symbol {
+          width: 50px;
+          height: 50px;
+          font-size: 22px;
+        }
+
+        .video-title {
+          font-size: 16px;
+        }
+
+        .video-meta,
+        .status-row,
+        .track-detail,
+        .muted,
+        .playlist-sub,
+        .volume-value {
+          font-size: 12px;
+        }
+
+        .status-row {
+          gap: 5px 8px;
+        }
+
+        .status-pill {
+          min-height: 24px;
+          padding: 2px 7px;
+        }
+
+        .now-playing,
+        .control-panel,
+        .setlist-entry {
+          padding: var(--space-2);
+        }
+
+        .now-playing {
+          gap: 5px;
+        }
+
+        .eyebrow {
+          font-size: 11px;
+        }
+
+        .track-title {
+          font-size: 17px;
+        }
+
+        .progress {
+          height: 7px;
+        }
+
+        button,
+        .file-button,
+        select {
+          min-height: 36px;
+        }
+
+        .control-panel {
+          align-items: stretch;
+          gap: 6px;
+        }
+
+        .control-group {
+          gap: 6px;
+        }
+
+        .control-group,
+        .setlist-row,
+        .dialog-footer {
+          width: 100%;
+        }
+
+        .control-group button,
+        .dialog-footer button {
+          flex: 1 1 auto;
+        }
+
+        .button-icon {
+          width: 36px;
+        }
+
+        .section-title {
+          font-size: 15px;
+        }
+
+        .section-header {
+          min-height: 24px;
+        }
+
+        .playlist-list {
+          min-height: 0;
+          max-height: 46svh;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .playlist-item {
+          padding: 9px 10px;
+        }
+
+        .control-spacer {
+          display: none;
+        }
+
+        .dialog-backdrop {
+          place-items: stretch;
+          padding: var(--space-2);
+        }
+
+        .setlist-dialog {
+          width: 100%;
+          height: calc(100svh - var(--space-4));
+          max-height: none;
+          margin: 0;
+          padding: var(--space-3);
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand" aria-label="yz-player">
+          <img class="brand-logo" src="./logo.png" alt="" />
+          <img class="brand-title" src="./header-title.png" alt="yz-player" />
+        </div>
+        <div class="header-actions">
+          <select class="theme-select" aria-label="テーマ" id="themeSelect">
+            <option value="">Default</option>
+            <option value="soft">Soft</option>
+            <option value="solid">Solid</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <div class="layout">
+          <section class="player-column" aria-label="プレイヤー">
+            <div class="player-stage">
+              <div class="youtube-viewport">
+                <div class="youtube-placeholder">
+                  <div class="play-symbol" aria-hidden="true">▶</div>
+                  <div class="video-title">YouTube viewport</div>
+                  <div class="video-meta">16:9 / sticky on narrow screens</div>
+                </div>
+              </div>
+
+              <div class="status-row">
+                <span class="status-pill"><span class="dot"></span>YouTube ready</span>
+                <span>song master loaded</span>
+                <span>3曲追加しました</span>
+              </div>
+
+              <section class="now-playing">
+                <div class="eyebrow">Now playing</div>
+                <div class="track-title" title="l'aster / 柚羽まくら">l'aster / 柚羽まくら</div>
+                <div class="track-detail">
+                  <span>1:42 / 4:12</span>
+                  <span>2 / 8</span>
+                  <span>repeat all</span>
+                </div>
+                <div class="progress" aria-label="再生位置">
+                  <div class="progress-value"></div>
+                </div>
+              </section>
+
+              <nav class="control-panel" aria-label="再生操作">
+                <div class="control-group">
+                  <button class="button-primary" type="button">再生</button>
+                  <button type="button">次曲</button>
+                  <button type="button" title="全曲リピート">全曲</button>
+                </div>
+                <div class="control-group">
+                  <button class="button-icon" type="button" aria-label="音量を下げる">−</button>
+                  <button type="button">ミュート</button>
+                  <button class="button-icon" type="button" aria-label="音量を上げる">＋</button>
+                  <span class="volume-value">70%</span>
+                </div>
+                <span class="control-spacer"></span>
+                <div class="control-group">
+                  <button type="button">export</button>
+                  <span class="file-button" role="button" tabindex="0">import</span>
+                  <button class="button-danger" type="button">clear</button>
+                </div>
+              </nav>
+            </div>
+          </section>
+
+          <aside class="playlist-column" aria-label="プレイリスト">
+            <section class="setlist-entry">
+              <div class="setlist-row">
+                <div>
+                  <h2 class="section-title">セトリ変換</h2>
+                  <div class="muted">YouTube URL とセトリから曲を追加</div>
+                </div>
+                <button class="button-primary" type="button" id="openSetlistDialog">開く</button>
+              </div>
+            </section>
+
+            <section>
+              <div class="section-header">
+                <h2 class="section-title">Playlist</h2>
+                <span class="muted">30 tracks</span>
+              </div>
+            </section>
+
+            <section class="playlist-list">
+              <ul class="playlist-items">
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">intro</div>
+                    <div class="playlist-sub">0:00-1:08 / YouTube abcdefghijk</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item" aria-current="true">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster</div>
+                    <div class="playlist-sub">柚羽まくら / 1:08-5:20</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">長い曲名が入ってもレイアウトを崩さず省略表示するサンプル</div>
+                    <div class="playlist-sub">柚羽まくら / 5:20-8:48</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">interlude</div>
+                    <div class="playlist-sub">8:48-10:04</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster reprise</div>
+                    <div class="playlist-sub">柚羽まくら / 10:04-14:16</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">setlist talk 01</div>
+                    <div class="playlist-sub">14:16-15:02</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster acoustic</div>
+                    <div class="playlist-sub">柚羽まくら / 15:02-18:54</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">short intro 02</div>
+                    <div class="playlist-sub">18:54-19:28</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster piano</div>
+                    <div class="playlist-sub">柚羽まくら / 19:28-23:12</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">mc break</div>
+                    <div class="playlist-sub">23:12-24:06</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster night mix</div>
+                    <div class="playlist-sub">柚羽まくら / 24:06-28:20</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">request corner</div>
+                    <div class="playlist-sub">28:20-29:10</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster short ver.</div>
+                    <div class="playlist-sub">柚羽まくら / 29:10-31:42</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">instrument check</div>
+                    <div class="playlist-sub">31:42-32:18</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster live take</div>
+                    <div class="playlist-sub">柚羽まくら / 32:18-36:36</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">setlist talk 02</div>
+                    <div class="playlist-sub">36:36-37:24</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster chorus loop</div>
+                    <div class="playlist-sub">柚羽まくら / 37:24-40:00</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">interlude 02</div>
+                    <div class="playlist-sub">40:00-41:08</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster mellow</div>
+                    <div class="playlist-sub">柚羽まくら / 41:08-45:16</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">playlist note</div>
+                    <div class="playlist-sub">45:16-45:50</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster encore</div>
+                    <div class="playlist-sub">柚羽まくら / 45:50-50:02</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">encore talk</div>
+                    <div class="playlist-sub">50:02-51:12</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster finale</div>
+                    <div class="playlist-sub">柚羽まくら / 51:12-55:30</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">afterword</div>
+                    <div class="playlist-sub">55:30-56:44</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">l'aster ending</div>
+                    <div class="playlist-sub">柚羽まくら / 56:44-60:12</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">bonus track 01</div>
+                    <div class="playlist-sub">60:12-63:02</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">bonus track 02</div>
+                    <div class="playlist-sub">63:02-66:24</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">credit roll</div>
+                    <div class="playlist-sub">66:24-67:40</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">stream outro</div>
+                    <div class="playlist-sub">67:40-68:30</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+                <li class="playlist-item">
+                  <div class="playlist-main">
+                    <div class="playlist-title">end screen</div>
+                    <div class="playlist-sub">68:30-69:00</div>
+                  </div>
+                  <button class="button-icon" type="button" aria-label="削除">×</button>
+                </li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+
+        <p class="sample-note">
+          Static sample only. This file does not load YouTube or touch app state.
+        </p>
+      </main>
+
+      <div class="dialog-backdrop" id="setlistDialogBackdrop" aria-hidden="false">
+        <section class="setlist-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+          <header class="dialog-header">
+            <h2 class="dialog-title" id="dialogTitle">セトリ変換</h2>
+            <button type="button" id="closeSetlistDialog">閉じる</button>
+          </header>
+
+          <div class="form-grid">
+            <label>
+              YouTube URL / video ID
+              <input value="https://www.youtube.com/watch?v=abcdefghijk" />
+            </label>
+            <label>
+              セトリ
+              <textarea>00:00 intro
+01:08 l'aster / 柚羽まくら
+05:20 長い曲名が入ってもレイアウトを崩さず省略表示するサンプル / 柚羽まくら
+invalid line sample</textarea>
+            </label>
+          </div>
+
+          <section class="parse-preview">
+            <div class="preview-counts">
+              <span><strong>3</strong> tracks parsed</span>
+              <span class="issue">1 issue</span>
+            </div>
+            <div class="muted">曲長マスタ一致: 1 / 次曲開始補完: 2</div>
+            <div class="issue">4行目を読み取れませんでした</div>
+          </section>
+
+          <footer class="dialog-footer">
+            <button type="button">プレビューのみ</button>
+            <button class="button-primary" type="button">3曲追加</button>
+          </footer>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const themeSelect = document.querySelector("#themeSelect")
+      const openSetlistDialog = document.querySelector("#openSetlistDialog")
+      const closeSetlistDialog = document.querySelector("#closeSetlistDialog")
+      const setlistDialogBackdrop = document.querySelector("#setlistDialogBackdrop")
+
+      themeSelect.addEventListener("change", (event) => {
+        document.documentElement.dataset.theme = event.target.value
+      })
+
+      function showSetlistDialog() {
+        setlistDialogBackdrop.hidden = false
+        setlistDialogBackdrop.setAttribute("aria-hidden", "false")
+        closeSetlistDialog.focus()
+      }
+
+      function hideSetlistDialog() {
+        setlistDialogBackdrop.hidden = true
+        setlistDialogBackdrop.setAttribute("aria-hidden", "true")
+        openSetlistDialog.focus()
+      }
+
+      openSetlistDialog.addEventListener("click", showSetlistDialog)
+      closeSetlistDialog.addEventListener("click", hideSetlistDialog)
+
+      setlistDialogBackdrop.addEventListener("click", (event) => {
+        if (event.target === setlistDialogBackdrop) {
+          hideSetlistDialog()
+        }
+      })
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !setlistDialogBackdrop.hidden) {
+          hideSetlistDialog()
+        }
+      })
+    </script>
+  </body>
+</html>
